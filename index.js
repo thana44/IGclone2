@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGOURL)
 
 const app = express()
 app.use(cors({
-    origin: [process.env.FONTENDPORT],
+    origin: ["https://instasam-begin.netlify.app/"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }))

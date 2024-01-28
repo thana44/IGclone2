@@ -21,37 +21,27 @@ router.post('/register', async(req, res)=>{
     }).catch(err=>res.json(err))
 })
 
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-
-    try {
-        const user = await userModel.findOne({ email: email });
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
+router.post('/login', async(req, res)=>{
+    const {email, password} = req.body
+    userModel.findOne({email: email})
+    .then(ans=>{
+        req.user = ans
+        console.log('testt',req.user)
+        if(!ans){
+            res.json('User not found.')
+        }else{
+            bcrypt.compare(password, ans.password, (err, response)=>{
+                if (response){
+                    const token = jwt.sign({postbyId:ans, _id: ans._id, email: ans.email, username: ans.username}, process.env.KEY,{expiresIn: '1d'})
+                    res.cookie('tk', token)
+                    return res.json('Success')
+                }else{
+                    res.json('The password is wrong.')
+                }
+            })
         }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (isPasswordValid) {
-            const token = jwt.sign(
-                { postbyId: user, _id: user._id, email: user.email, username: user.username },
-                process.env.KEY,
-                { expiresIn: '1d' }
-            );
-
-            // Set the token in the cookie
-            res.cookie('tk', token, { httpOnly: true, sameSite: 'strict', maxAge: 86400000 });
-
-            return res.status(200).json({ message: 'Login successful.', token });
-        } else {
-            return res.status(401).json({ message: 'Incorrect password.' });
-        }
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal Server Error.' });
-    }
-});
+    }).catch(err=>console.log(err))
+})
 
  const middleware = async(req, res, next)=>{
     const token = req.cookies.tk

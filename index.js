@@ -10,10 +10,7 @@ require('dotenv').config()
 const {readdirSync} = require('fs')
 
 //fcmoxrWFYRvqMWYC
-mongoose.connect(process.env.MONGOURL,{
-    useNewUrlParse: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGOURL)
 .then(()=>{
     console.log('DB connected..')
 }).catch(err=>console.log(err))

@@ -34,6 +34,7 @@ router.post('/login', async(req, res)=>{
                 if (response){
                     const token = jwt.sign({postbyId:ans, _id: ans._id, email: ans.email, username: ans.username}, process.env.KEY,{expiresIn: '1d'})
                     res.cookie('tk', token)
+                    console.log('this is token from login',token)
                     return res.json('Success')
                 }else{
                     res.json('The password is wrong.')
